@@ -1,0 +1,117 @@
+package com.company;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.LocalDate;
+import java.time.Month;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
+
+import static java.time.temporal.ChronoUnit.DAYS;
+
+public class Main {
+
+    public static void main(String[] args) throws IOException {
+        String path = "D:\\TU\\SIRMA\\src\\CSV";
+
+        List<String> list = Files.readAllLines(Path.of(path));
+        Map<Integer, List<Employee>> map = new LinkedHashMap<>();
+
+        for (String f : list) {
+            String[] data = f.split(", ");
+
+            int empId = Integer.parseInt(data[0]);
+            int projectID = Integer.parseInt(data[1]);
+            LocalDate dateFrom = LocalDate.parse(data[2]);
+            LocalDate dateTo;
+
+            if (data[3].equals("NULL")) {
+                dateTo = LocalDate.now();
+            } else {
+                dateTo = LocalDate.parse(data[3]);
+            }
+
+            Employee employee = new Employee(empId, dateFrom, dateTo);
+
+            List<Employee> employeeList = new ArrayList<>();
+            employeeList.add(employee);
+
+            if (!map.containsKey(projectID)) {
+                map.put(projectID, employeeList);
+            } else {
+                map.get(projectID).add(employee);
+            }
+
+        }
+        Map<Long, String> timeWithIEmpId = new LinkedHashMap<>();
+
+        for (Map.Entry<Integer, List<Employee>> entry : map.entrySet()) {
+
+            List<Employee> employee = entry.getValue();
+
+            for (int i = 0; i < employee.size(); i++) {
+                for (int j = i + 1; j < employee.size(); j++) {
+
+                    Employee current = employee.get(i);
+                    Employee next = employee.get(j);
+
+
+                    LocalDate startDate = null;
+
+                    if (next.getDateFrom().isAfter(current.getDateFrom())) {
+                        startDate = next.getDateFrom();
+                    } else if (current.getDateFrom().isAfter(next.getDateFrom())) {
+                        startDate = current.getDateFrom();
+                    }
+
+
+                    LocalDate endDate = null;
+
+                    if (next.getDateTo().isBefore(current.getDateTo())) {
+                        endDate = next.getDateTo();
+                    } else if (current.getDateTo().isBefore(next.getDateTo())) {
+                        endDate = current.getDateTo();
+                    }
+
+
+                    long noOfDaysBetween = startDate.until(endDate, DAYS);
+                    timeWithIEmpId.put(noOfDaysBetween, current.getEmpId() + " " + next.getEmpId());
+
+
+
+                }
+
+            }
+        }
+
+
+        long max = Collections.max(timeWithIEmpId.keySet());
+        String value = timeWithIEmpId.get(max);
+
+
+        String[] data = value.split(" ");
+        int firstNum = Integer.parseInt(data[0]);
+        int secondNum = Integer.parseInt(data[1]);
+
+        int count = 0;
+
+        for (Map.Entry<Integer, List<Employee>> entry : map.entrySet()) {
+            List<Employee> employee = entry.getValue();
+
+            for (int i = 0; i < employee.size(); i++) {
+                for (int j = i + 1; j < employee.size(); j++) {
+                    Employee currEmp = employee.get(i);
+                    Employee nextEmp = employee.get(j);
+
+                    if (currEmp.getEmpId() == firstNum && nextEmp.getEmpId() == secondNum) {
+                        count++;
+                    }
+                }
+
+            }
+        }
+
+        System.out.printf("%s %d", value ,count);
+    }
+}
