@@ -1,0 +1,40 @@
+package com.company;
+
+import java.time.LocalDate;
+
+public class Employee {
+    private  int empId;
+    private LocalDate dateFrom;
+    private LocalDate dateTo;
+
+    public Employee(int projectID, LocalDate dateFrom, LocalDate dateTo) {
+        this.empId = projectID;
+        this.dateFrom = dateFrom;
+        this.dateTo = dateTo;
+    }
+
+
+    public int getEmpId() {
+        return empId;
+    }
+
+    public void setEmpId(int empId) {
+        this.empId = empId;
+    }
+
+    public LocalDate getDateFrom() {
+        return dateFrom;
+    }
+
+    public void setDateFrom(LocalDate dateFrom) {
+        this.dateFrom = dateFrom;
+    }
+
+    public LocalDate getDateTo() {
+        return dateTo;
+    }
+
+    public void setDateTo(LocalDate dateTo) {
+        this.dateTo = dateTo;
+    }
+}
